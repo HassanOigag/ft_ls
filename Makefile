@@ -1,7 +1,7 @@
 CC     = gcc
 CFLAGS = -Wall -Wextra -Werror
 NAME   = ft_ls
-SRCS   = main.c
+SRCS   = main.c helpers.c
 OBJS   = $(SRCS:.c=.o)
 
 all: $(NAME)
@@ -22,7 +22,7 @@ clean:
 	rm -f $(OBJS)
 
 fclean: clean
-	make -C libft fclean
+	make -C libft fclean 
 	rm -f $(NAME)
 
 re: fclean all
