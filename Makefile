@@ -9,8 +9,10 @@ all: $(NAME)
 $(NAME): libft/libft.a $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -L libft -lft -o $(NAME)
 
-libft/libft.a:
+libft/libft.a: FORCE
 	make -C libft
+
+FORCE:
 
 %.o: %.c
 	$(CC) $(CFLAGS) -I libft -c $< -o $@
@@ -25,4 +27,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re FORCE

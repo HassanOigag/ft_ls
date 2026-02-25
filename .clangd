@@ -1,0 +1,6 @@
+CompileFlags:
+  Add:
+    - -I./libft
+    - -Wall
+    - -Wextra
+    - -Werror
