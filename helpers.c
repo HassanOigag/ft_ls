@@ -61,6 +61,7 @@ t_list *parser(char **argv, int *flags_selected)
    int i = 1;
    int found_arg = 0;
    t_list *targets = NULL;
+   // struct stat info;
    while (argv[i])
    {
       if (is_flag_stopper(argv[i]))
@@ -84,6 +85,9 @@ t_list *parser(char **argv, int *flags_selected)
       else
       {
          t_list *arg = ft_lstnew(ft_strdup(argv[i]));
+         // if (stat(argv[i], &info) != -1)
+         //    ft_printf("stat error\n");
+         // ft_printf("sizeL: %ld\n", info.st_size);  
          ft_lstadd_back(&targets, arg);
       }
       i++;

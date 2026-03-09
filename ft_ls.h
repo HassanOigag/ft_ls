@@ -3,6 +3,11 @@
 
 #include <dirent.h>
 #include "libft/libft.h"
+#include <sys/stat.h>
+#include <unistd.h>
+#include <pwd.h>
+#include <grp.h>
+#include <time.h>
 
 typedef enum e_flag
 {
@@ -14,10 +19,15 @@ typedef enum e_flag
    FLAG_COUNT,
 } t_flag;
 
-typedef struct file{
-   char *name;
-   long size;
-   int file_type;
+typedef struct s_file{
+   char *file_name;
+   off_t size;
+   mode_t mode;
+   nlink_t nlink;
+   uid_t uid;
+   gid_t gid;
+   time_t mtime;
+   blkcnt_t blocks;
 } t_file;
 
 
