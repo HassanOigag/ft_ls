@@ -143,7 +143,6 @@ void lister(t_list *targets)
    while (tmp2)
    {
       t_file *file = (t_file *)tmp2->content;
-      ft_printf("director int hand : %s\n", file->file_name);
       list_dir(file->file_name);
 
       tmp2 = tmp2->next;
