@@ -39,5 +39,6 @@ int update_flags_array(int *flags, char c);
 int is_flag_stopper(char *s);
 void print_parser_result(t_list *targets, int *flags);
 t_list *parser(char **argv, int *flags_selected);
+char *build_path(char *dir, char *name);
 
 #endif

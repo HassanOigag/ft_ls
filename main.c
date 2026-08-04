@@ -50,6 +50,14 @@ void printfiles(t_list *targets, int extended_print)
    }
 }
 
+char *build_path(char *dir, char *name)
+{
+   char *tmp = ft_strjoin(dir, "/");
+   char *full = ft_strjoin(tmp, name);
+   free(tmp);
+   return full;
+}
+
 void list_dir(char *path)
 {
    DIR *dir;
@@ -69,7 +77,8 @@ void list_dir(char *path)
          continue;
 
       t_file *f = malloc(sizeof(t_file));
-      if (lstat(entry->d_name, &info) != -1)
+      char *full = build_path(path, entry->d_name);
+      if (lstat(full, &info) != -1)
       {
          f->file_name = ft_strdup(entry->d_name);
          f->size = info.st_size;
@@ -87,6 +96,7 @@ void list_dir(char *path)
          ft_printf("an error occured\n");
          free(f);
       }
+      free(full);
    }
    closedir(dir);
    printfiles(files, 0);
