@@ -8,6 +8,10 @@
 #include <pwd.h>
 #include <grp.h>
 #include <time.h>
+#include <errno.h>
+#include <string.h>
+
+extern int g_status;
 
 typedef enum e_flag
 {
@@ -46,6 +50,7 @@ char *build_path(char *dir, char *name);
 void fill_file(t_file *f, char *name, struct stat *info);
 void free_file(void *content);
 char *read_link(char *path);
+void print_error(char *path);
 
 void printfiles(t_list *targets, int extended_print, int show_total);
 char file_type(mode_t m);

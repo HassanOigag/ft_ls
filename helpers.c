@@ -77,7 +77,9 @@ t_list *parser(char **argv, int *flags_selected)
          int success = parse_flag(argv[i], flags_selected);
          if (success < 0)
          {
-            ft_printf("%s: invalid option -- %c\n", argv[0], -success);
+            ft_putstr_fd("ft_ls: invalid option -- ", 2);
+            ft_putchar_fd(-success, 2);
+            ft_putstr_fd("\n", 2);
             ft_lstclear(&targets, free);
             return NULL;
          }

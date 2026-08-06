@@ -1,5 +1,7 @@
 #include "ft_ls.h"
 
+int g_status = 0;
+
 int main(int argc, char *argv[])
 {
    t_list *targets = NULL;
@@ -12,5 +14,5 @@ int main(int argc, char *argv[])
       return 1;
    lister(targets, flags_selected);
    ft_lstclear(&targets, free);
-   return 0;
+   return g_status;
 }

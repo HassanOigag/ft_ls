@@ -36,7 +36,7 @@ void list_dir(char *path, int *flags, int header, int *printed)
    dir = opendir(path);
    if (!dir)
    {
-      ft_printf("something happened with this dir : %s\n", path);
+      print_error(path);
       return;
    }
    while ((entry = readdir(dir)))
@@ -94,7 +94,7 @@ void lister(t_list *targets, int *flags)
       }
       else
       {
-         ft_printf("an error occured\n");
+         print_error(tmp->content);
          free(f);
       }
       tmp = tmp->next;

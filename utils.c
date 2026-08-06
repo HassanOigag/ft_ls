@@ -16,6 +16,16 @@ void free_file(void *content)
    free(f);
 }
 
+void print_error(char *path)
+{
+   ft_putstr_fd("ft_ls: ", 2);
+   ft_putstr_fd(path, 2);
+   ft_putstr_fd(": ", 2);
+   ft_putstr_fd(strerror(errno), 2);
+   ft_putstr_fd("\n", 2);
+   g_status = 1;
+}
+
 char *read_link(char *path)
 {
    char buf[4096];
