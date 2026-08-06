@@ -24,5 +24,6 @@ void fill_file(t_file *f, char *name, struct stat *info)
    f->blocks = info->st_blocks;
    f->gid = info->st_gid;
    f->mtime = info->st_mtimespec.tv_sec;
+   f->mtime_nsec = info->st_mtimespec.tv_nsec;
    f->nlink = info->st_nlink;
 }

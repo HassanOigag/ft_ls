@@ -27,6 +27,7 @@ typedef struct s_file{
    uid_t uid;
    gid_t gid;
    time_t mtime;
+   long mtime_nsec;
    blkcnt_t blocks;
 } t_file;
 
@@ -56,5 +57,6 @@ void list_dir(char *path, int *flags);
 void sort_list(t_list *list, int *flags);
 void sort_files(t_list *list, int (*cmp)(t_file *, t_file *), int rev);
 int cmp_name(t_file *a, t_file *b);
+int cmp_time(t_file *a, t_file *b);
 
 #endif

@@ -9,6 +9,19 @@ int cmp_name(t_file *a, t_file *b)
    return ft_strncmp(a->file_name, b->file_name, n + 1);
 }
 
+int cmp_time(t_file *a, t_file *b)
+{
+   if (a->mtime < b->mtime)
+      return 1;
+   if (a->mtime > b->mtime)
+      return -1;
+   if (a->mtime_nsec < b->mtime_nsec)
+      return 1;
+   if (a->mtime_nsec > b->mtime_nsec)
+      return -1;
+   return cmp_name(a, b);
+}
+
 void sort_files(t_list *list, int (*cmp)(t_file *, t_file *), int rev)
 {
    int swapped = 1;
@@ -40,5 +53,8 @@ void sort_files(t_list *list, int (*cmp)(t_file *, t_file *), int rev)
 
 void sort_list(t_list *list, int *flags)
 {
-   sort_files(list, cmp_name, flags[FLAG_R]);
+   if (flags[FLAG_T])
+      sort_files(list, cmp_time, flags[FLAG_R]);
+   else
+      sort_files(list, cmp_name, flags[FLAG_R]);
 }
