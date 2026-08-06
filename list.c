@@ -33,6 +33,7 @@ void list_dir(char *path, int *flags)
       free(full);
    }
    closedir(dir);
+   sort_list(files, flags);
    printfiles(files, flags[FLAG_L]);
    ft_lstclear(&files, free_file);
 }
@@ -62,6 +63,8 @@ void lister(t_list *targets, int *flags)
       }
       tmp = tmp->next;
    }
+   sort_list(files, flags);
+   sort_list(dirs, flags);
    printfiles(files, flags[FLAG_L]);
    ft_lstclear(&files, free_file);
    tmp = dirs;
