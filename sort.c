@@ -9,10 +9,11 @@ int cmp_name(t_file *a, t_file *b)
    return ft_strncmp(a->file_name, b->file_name, n + 1);
 }
 
-void sort_files(t_list *list, int (*cmp)(t_file *, t_file *))
+void sort_files(t_list *list, int (*cmp)(t_file *, t_file *), int rev)
 {
    int swapped = 1;
    t_list *tmp;
+   int c;
 
    if (!list)
       return;
@@ -22,7 +23,10 @@ void sort_files(t_list *list, int (*cmp)(t_file *, t_file *))
       tmp = list;
       while (tmp->next)
       {
-         if (cmp(tmp->content, tmp->next->content) > 0)
+         c = cmp(tmp->content, tmp->next->content);
+         if (rev)
+            c = -c;
+         if (c > 0)
          {
             void *value = tmp->content;
             tmp->content = tmp->next->content;
@@ -36,6 +40,5 @@ void sort_files(t_list *list, int (*cmp)(t_file *, t_file *))
 
 void sort_list(t_list *list, int *flags)
 {
-   (void) flags;
-   sort_files(list, cmp_name);
+   sort_files(list, cmp_name, flags[FLAG_R]);
 }

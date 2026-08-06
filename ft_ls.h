@@ -54,7 +54,7 @@ void lister(t_list *targets, int *flags);
 void list_dir(char *path, int *flags);
 
 void sort_list(t_list *list, int *flags);
-void sort_files(t_list *list, int (*cmp)(t_file *, t_file *));
+void sort_files(t_list *list, int (*cmp)(t_file *, t_file *), int rev);
 int cmp_name(t_file *a, t_file *b);
 
 #endif
