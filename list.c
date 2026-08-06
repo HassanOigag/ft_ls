@@ -15,7 +15,7 @@ void list_dir(char *path, int *flags)
    }
    while ((entry = readdir(dir)))
    {
-      if (entry->d_name[0] == '.')
+      if (!flags[FLAG_A] && entry->d_name[0] == '.')
          continue;
 
       t_file *f = malloc(sizeof(t_file));
