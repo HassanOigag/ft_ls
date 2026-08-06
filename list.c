@@ -48,6 +48,8 @@ void list_dir(char *path, int *flags, int header, int *printed)
       if (lstat(full, &info) != -1)
       {
          fill_file(f, ft_strdup(entry->d_name), &info);
+         if (S_ISLNK(info.st_mode))
+            f->link = read_link(full);
          ft_lstadd_back(&files, ft_lstnew(f));
       }
       else
@@ -63,7 +65,7 @@ void list_dir(char *path, int *flags, int header, int *printed)
       ft_printf("%s:\n", path);
    }
    *printed = 1;
-   printfiles(files, flags[FLAG_L]);
+   printfiles(files, flags[FLAG_L], 1);
    if (flags[FLAG_R_BIG])
       recurse_subdirs(path, files, flags, printed);
    ft_lstclear(&files, free_file);
@@ -83,6 +85,8 @@ void lister(t_list *targets, int *flags)
       if (lstat((char *)tmp->content, &info) != -1)
       {
          fill_file(f, ft_strdup(tmp->content), &info);
+         if (S_ISLNK(info.st_mode))
+            f->link = read_link(tmp->content);
          if (S_ISDIR(f->mode))
             ft_lstadd_back(&dirs, ft_lstnew(f));
          else
@@ -99,7 +103,7 @@ void lister(t_list *targets, int *flags)
    sort_list(dirs, flags);
    if (files)
    {
-      printfiles(files, flags[FLAG_L]);
+      printfiles(files, flags[FLAG_L], 0);
       printed = 1;
    }
    tmp = dirs;

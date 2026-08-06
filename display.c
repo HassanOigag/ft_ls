@@ -54,9 +54,26 @@ void get_widths(t_list *files, int *wl, int *wo, int *wg, int *ws)
    }
 }
 
+char file_type(mode_t m)
+{
+   if (S_ISDIR(m))
+      return 'd';
+   if (S_ISLNK(m))
+      return 'l';
+   if (S_ISCHR(m))
+      return 'c';
+   if (S_ISBLK(m))
+      return 'b';
+   if (S_ISFIFO(m))
+      return 'p';
+   if (S_ISSOCK(m))
+      return 's';
+   return '-';
+}
+
 void print_perms(t_file *file)
 {
-   ft_printf("%c", S_ISDIR(file->mode) ? 'd' : '-');
+   ft_printf("%c", file_type(file->mode));
 
    ft_printf("%c", (file->mode & S_IRUSR) ? 'r' : '-');
    ft_printf("%c", (file->mode & S_IWUSR) ? 'w' : '-');
@@ -92,15 +109,33 @@ void print_long(t_file *file, int wl, int wo, int wg, int ws)
    char *time_str = ctime(&file->mtime);
    ft_printf("%.12s", time_str + 4);
    ft_printf(" ");
-   ft_printf("%s\n", file->file_name);
+   ft_printf("%s", file->file_name);
+   if (file->link)
+      ft_printf(" -> %s", file->link);
+   ft_printf("\n");
 }
 
-void printfiles(t_list *targets, int extended_print)
+long get_total(t_list *files)
+{
+   long total = 0;
+
+   while (files)
+   {
+      t_file *f = files->content;
+      total += f->blocks;
+      files = files->next;
+   }
+   return total;
+}
+
+void printfiles(t_list *targets, int extended_print, int show_total)
 {
    t_list *tmp = targets;
    int wl, wo, wg, ws;
 
    get_widths(targets, &wl, &wo, &wg, &ws);
+   if (extended_print && show_total)
+      ft_printf("total %ld\n", get_total(targets));
    while (tmp)
    {
       t_file *file = (t_file *) tmp->content;

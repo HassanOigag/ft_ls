@@ -29,6 +29,7 @@ typedef struct s_file{
    time_t mtime;
    long mtime_nsec;
    blkcnt_t blocks;
+   char *link;
 } t_file;
 
 
@@ -44,8 +45,11 @@ t_list *parser(char **argv, int *flags_selected);
 char *build_path(char *dir, char *name);
 void fill_file(t_file *f, char *name, struct stat *info);
 void free_file(void *content);
+char *read_link(char *path);
 
-void printfiles(t_list *targets, int extended_print);
+void printfiles(t_list *targets, int extended_print, int show_total);
+char file_type(mode_t m);
+long get_total(t_list *files);
 char *owner_name(uid_t uid);
 char *group_name(gid_t gid);
 int num_width(long n);

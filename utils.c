@@ -12,7 +12,19 @@ void free_file(void *content)
 {
    t_file *f = content;
    free(f->file_name);
+   free(f->link);
    free(f);
+}
+
+char *read_link(char *path)
+{
+   char buf[4096];
+   ssize_t n = readlink(path, buf, sizeof(buf) - 1);
+
+   if (n < 0)
+      return NULL;
+   buf[n] = '\0';
+   return ft_strdup(buf);
 }
 
 void fill_file(t_file *f, char *name, struct stat *info)
@@ -26,4 +38,5 @@ void fill_file(t_file *f, char *name, struct stat *info)
    f->mtime = info->st_mtimespec.tv_sec;
    f->mtime_nsec = info->st_mtimespec.tv_nsec;
    f->nlink = info->st_nlink;
+   f->link = NULL;
 }
