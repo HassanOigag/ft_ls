@@ -1,0 +1,4 @@
+*.o
+ft_ls
+sort_test
+.DS_Store
