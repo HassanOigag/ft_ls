@@ -39,6 +39,18 @@ int update_flags_array(int *flags, char c);
 int is_flag_stopper(char *s);
 void print_parser_result(t_list *targets, int *flags);
 t_list *parser(char **argv, int *flags_selected);
+
 char *build_path(char *dir, char *name);
+void fill_file(t_file *f, char *name, struct stat *info);
+void free_file(void *content);
+
+void printfiles(t_list *targets, int extended_print);
+char *owner_name(uid_t uid);
+char *group_name(gid_t gid);
+int num_width(long n);
+void print_pad(int n);
+
+void lister(t_list *targets, int *flags);
+void list_dir(char *path, int *flags);
 
 #endif

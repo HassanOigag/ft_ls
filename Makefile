@@ -1,7 +1,7 @@
 CC     = gcc
 CFLAGS = -Wall -Wextra -Werror
 NAME   = ft_ls
-SRCS   = main.c helpers.c
+SRCS   = main.c helpers.c list.c display.c utils.c
 OBJS   = $(SRCS:.c=.o)
 
 all: $(NAME)
