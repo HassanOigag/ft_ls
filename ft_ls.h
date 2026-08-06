@@ -52,7 +52,9 @@ int num_width(long n);
 void print_pad(int n);
 
 void lister(t_list *targets, int *flags);
-void list_dir(char *path, int *flags);
+void list_dir(char *path, int *flags, int header, int *printed);
+void recurse_subdirs(char *path, t_list *files, int *flags, int *printed);
+int is_dot_dir(char *name);
 
 void sort_list(t_list *list, int *flags);
 void sort_files(t_list *list, int (*cmp)(t_file *, t_file *), int rev);

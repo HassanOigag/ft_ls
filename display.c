@@ -108,7 +108,7 @@ void printfiles(t_list *targets, int extended_print)
       if (extended_print)
          print_long(file, wl, wo, wg, ws);
       else
-         ft_printf("%s  ", file->file_name);
+         ft_printf("%s\n", file->file_name);
       tmp = tmp->next;
    }
 }
