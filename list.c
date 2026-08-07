@@ -33,6 +33,13 @@ void list_dir(char *path, int *flags, int header, int *printed)
    t_list *files = NULL;
    struct stat info;
 
+   if (header)
+   {
+      if (*printed)
+         ft_printf("\n");
+      ft_printf("%s:\n", path);
+      *printed = 1;
+   }
    dir = opendir(path);
    if (!dir)
    {
@@ -58,12 +65,6 @@ void list_dir(char *path, int *flags, int header, int *printed)
    }
    closedir(dir);
    sort_list(files, flags);
-   if (header)
-   {
-      if (*printed)
-         ft_printf("\n");
-      ft_printf("%s:\n", path);
-   }
    *printed = 1;
    printfiles(files, flags[FLAG_L], 1);
    if (flags[FLAG_R_BIG])
