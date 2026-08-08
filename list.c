@@ -107,11 +107,12 @@ void lister(t_list *targets, int *flags)
       printfiles(files, flags[FLAG_L], 0);
       printed = 1;
    }
+   int header = files || ft_lstsize(dirs) > 1;
    tmp = dirs;
    while (tmp)
    {
       t_file *file = tmp->content;
-      list_dir(file->file_name, flags, files || ft_lstsize(dirs) > 1, &printed);
+      list_dir(file->file_name, flags, header, &printed);
       tmp = tmp->next;
    }
    ft_lstclear(&files, free_file);

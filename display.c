@@ -46,10 +46,14 @@ void get_widths(t_list *files, int *wl, int *wo, int *wg, int *ws)
       int o = ft_strlen(owner_name(f->uid));
       int g = ft_strlen(group_name(f->gid));
       int s = num_width(f->size);
-      if (l > *wl) *wl = l;
-      if (o > *wo) *wo = o;
-      if (g > *wg) *wg = g;
-      if (s > *ws) *ws = s;
+      if (l > *wl)
+         *wl = l;
+      if (o > *wo)
+         *wo = o;
+      if (g > *wg)
+         *wg = g;
+      if (s > *ws)
+         *ws = s;
       files = files->next;
    }
 }
