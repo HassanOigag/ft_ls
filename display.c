@@ -75,21 +75,27 @@ char file_type(mode_t m)
    return '-';
 }
 
+char spec_char(mode_t m, int xbit, int sbit, char yes, char no)
+{
+   if (m & sbit)
+      return (m & xbit) ? yes : no;
+   return (m & xbit) ? 'x' : '-';
+}
+
 void print_perms(t_file *file)
 {
-   ft_printf("%c", file_type(file->mode));
+   mode_t m = file->mode;
 
-   ft_printf("%c", (file->mode & S_IRUSR) ? 'r' : '-');
-   ft_printf("%c", (file->mode & S_IWUSR) ? 'w' : '-');
-   ft_printf("%c", (file->mode & S_IXUSR) ? 'x' : '-');
-
-   ft_printf("%c", (file->mode & S_IRGRP) ? 'r' : '-');
-   ft_printf("%c", (file->mode & S_IWGRP) ? 'w' : '-');
-   ft_printf("%c", (file->mode & S_IXGRP) ? 'x' : '-');
-
-   ft_printf("%c", (file->mode & S_IROTH) ? 'r' : '-');
-   ft_printf("%c", (file->mode & S_IWOTH) ? 'w' : '-');
-   ft_printf("%c", (file->mode & S_IXOTH) ? 'x' : '-');
+   ft_printf("%c", file_type(m));
+   ft_printf("%c", (m & S_IRUSR) ? 'r' : '-');
+   ft_printf("%c", (m & S_IWUSR) ? 'w' : '-');
+   ft_printf("%c", spec_char(m, S_IXUSR, S_ISUID, 's', 'S'));
+   ft_printf("%c", (m & S_IRGRP) ? 'r' : '-');
+   ft_printf("%c", (m & S_IWGRP) ? 'w' : '-');
+   ft_printf("%c", spec_char(m, S_IXGRP, S_ISGID, 's', 'S'));
+   ft_printf("%c", (m & S_IROTH) ? 'r' : '-');
+   ft_printf("%c", (m & S_IWOTH) ? 'w' : '-');
+   ft_printf("%c", spec_char(m, S_IXOTH, S_ISVTX, 't', 'T'));
 }
 
 void print_long(t_file *file, int wl, int wo, int wg, int ws)

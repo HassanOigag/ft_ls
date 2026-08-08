@@ -54,6 +54,7 @@ void print_error(char *path);
 
 void printfiles(t_list *targets, int extended_print, int show_total);
 char file_type(mode_t m);
+char spec_char(mode_t m, int xbit, int sbit, char yes, char no);
 long get_total(t_list *files);
 char *owner_name(uid_t uid);
 char *group_name(gid_t gid);
