@@ -1,120 +1,74 @@
 #include "ft_ls.h"
 
-int is_dot_dir(char *name)
+void	print_header(char *path, int *printed)
 {
-   if (name[0] == '.' && name[1] == '\0')
-      return 1;
-   if (name[0] == '.' && name[1] == '.' && name[2] == '\0')
-      return 1;
-   return 0;
+	if (*printed)
+		ft_printf("\n");
+	ft_printf("%s:\n", path);
+	*printed = 1;
 }
 
-void recurse_subdirs(char *path, t_list *files, int *flags, int *printed)
+void	add_target(char *name, t_list **files, t_list **dirs)
 {
-   t_list *tmp = files;
+	t_file		*f;
+	struct stat	info;
 
-   while (tmp)
-   {
-      t_file *f = tmp->content;
-      if (S_ISDIR(f->mode) && !is_dot_dir(f->file_name))
-      {
-         char *child = build_path(path, f->file_name);
-         list_dir(child, flags, 1, printed);
-         free(child);
-      }
-      tmp = tmp->next;
-   }
+	if (lstat(name, &info) == -1)
+	{
+		print_error(name);
+		return ;
+	}
+	f = malloc(sizeof(t_file));
+	fill_file(f, ft_strdup(name), &info);
+	if (S_ISLNK(info.st_mode))
+		f->link = read_link(name);
+	if (S_ISDIR(f->mode))
+		ft_lstadd_back(dirs, ft_lstnew(f));
+	else
+		ft_lstadd_back(files, ft_lstnew(f));
 }
 
-void list_dir(char *path, int *flags, int header, int *printed)
+void	build_targets(t_list *targets, t_list **files, t_list **dirs)
 {
-   DIR *dir;
-   struct dirent *entry;
-   t_list *files = NULL;
-   struct stat info;
-
-   if (header)
-   {
-      if (*printed)
-         ft_printf("\n");
-      ft_printf("%s:\n", path);
-      *printed = 1;
-   }
-   dir = opendir(path);
-   if (!dir)
-   {
-      print_error(path);
-      return;
-   }
-   while ((entry = readdir(dir)))
-   {
-      if (!flags[FLAG_A] && entry->d_name[0] == '.')
-         continue;
-      t_file *f = malloc(sizeof(t_file));
-      char *full = build_path(path, entry->d_name);
-      if (lstat(full, &info) != -1)
-      {
-         fill_file(f, ft_strdup(entry->d_name), &info);
-         if (S_ISLNK(info.st_mode))
-            f->link = read_link(full);
-         ft_lstadd_back(&files, ft_lstnew(f));
-      }
-      else
-         free(f);
-      free(full);
-   }
-   closedir(dir);
-   sort_list(files, flags);
-   *printed = 1;
-   printfiles(files, flags[FLAG_L], 1);
-   if (flags[FLAG_R_BIG])
-      recurse_subdirs(path, files, flags, printed);
-   ft_lstclear(&files, free_file);
+	while (targets)
+	{
+		add_target(targets->content, files, dirs);
+		targets = targets->next;
+	}
 }
 
-void lister(t_list *targets, int *flags)
+void	list_dirs(t_list *dirs, int *flags, int header, int *printed)
 {
-   t_list *tmp = targets;
-   t_list *files = NULL;
-   t_list *dirs = NULL;
-   struct stat info;
-   int printed = 0;
+	t_file	*file;
 
-   while (tmp)
-   {
-      t_file *f = malloc(sizeof(t_file));
-      if (lstat((char *)tmp->content, &info) != -1)
-      {
-         fill_file(f, ft_strdup(tmp->content), &info);
-         if (S_ISLNK(info.st_mode))
-            f->link = read_link(tmp->content);
-         if (S_ISDIR(f->mode))
-            ft_lstadd_back(&dirs, ft_lstnew(f));
-         else
-            ft_lstadd_back(&files, ft_lstnew(f));
-      }
-      else
-      {
-         print_error(tmp->content);
-         free(f);
-      }
-      tmp = tmp->next;
-   }
-   sort_list(files, flags);
-   sort_list(dirs, flags);
-   if (files)
-   {
-      printfiles(files, flags[FLAG_L], 0);
-      printed = 1;
-   }
-   int header = files || ft_lstsize(dirs) > 1;
-   tmp = dirs;
-   while (tmp)
-   {
-      t_file *file = tmp->content;
-      list_dir(file->file_name, flags, header, &printed);
-      tmp = tmp->next;
-   }
-   ft_lstclear(&files, free_file);
-   ft_lstclear(&dirs, free_file);
+	while (dirs)
+	{
+		file = dirs->content;
+		list_dir(file->file_name, flags, header, printed);
+		dirs = dirs->next;
+	}
+}
+
+void	lister(t_list *targets, int *flags)
+{
+	t_list	*files;
+	t_list	*dirs;
+	int		header;
+	int		printed;
+
+	files = NULL;
+	dirs = NULL;
+	printed = 0;
+	build_targets(targets, &files, &dirs);
+	sort_list(files, flags);
+	sort_list(dirs, flags);
+	header = (files != NULL) || (ft_lstsize(dirs) > 1);
+	if (files)
+	{
+		printfiles(files, flags[FLAG_L], 0);
+		printed = 1;
+	}
+	list_dirs(dirs, flags, header, &printed);
+	ft_lstclear(&files, free_file);
+	ft_lstclear(&dirs, free_file);
 }

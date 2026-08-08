@@ -1,159 +1,90 @@
 #include "ft_ls.h"
 
-char *owner_name(uid_t uid)
+void	get_widths(t_list *files, t_width *w)
 {
-   struct passwd *pw = getpwuid(uid);
-   if (pw)
-      return pw->pw_name;
-   return "?";
+	t_file	*f;
+	int		len;
+
+	w->nlink = 0;
+	w->owner = 0;
+	w->group = 0;
+	w->size = 0;
+	while (files)
+	{
+		f = files->content;
+		len = num_width(f->nlink);
+		if (len > w->nlink)
+			w->nlink = len;
+		len = ft_strlen(owner_name(f->uid));
+		if (len > w->owner)
+			w->owner = len;
+		len = ft_strlen(group_name(f->gid));
+		if (len > w->group)
+			w->group = len;
+		len = num_width(f->size);
+		if (len > w->size)
+			w->size = len;
+		files = files->next;
+	}
 }
 
-char *group_name(gid_t gid)
+long	get_total(t_list *files)
 {
-   struct group *gr = getgrgid(gid);
-   if (gr)
-      return gr->gr_name;
-   return "?";
+	long	total;
+	t_file	*f;
+
+	total = 0;
+	while (files)
+	{
+		f = files->content;
+		total += f->blocks;
+		files = files->next;
+	}
+	return (total);
 }
 
-int num_width(long n)
+void	print_long(t_file *file, t_width w)
 {
-   int w = 1;
-   while (n >= 10)
-   {
-      n /= 10;
-      w++;
-   }
-   return w;
+	char	*ow;
+	char	*gr;
+	char	*t;
+
+	print_perms(file);
+	print_pad(w.nlink - num_width(file->nlink) + 1);
+	ft_printf("%d ", file->nlink);
+	ow = owner_name(file->uid);
+	ft_printf("%s", ow);
+	print_pad(w.owner - ft_strlen(ow) + 2);
+	gr = group_name(file->gid);
+	ft_printf("%s", gr);
+	print_pad(w.group - ft_strlen(gr) + 2);
+	print_pad(w.size - num_width(file->size));
+	ft_printf("%ld ", file->size);
+	t = ctime(&file->mtime);
+	ft_printf("%.12s ", t + 4);
+	ft_printf("%s", file->file_name);
+	if (file->link)
+		ft_printf(" -> %s", file->link);
+	ft_printf("\n");
 }
 
-void print_pad(int n)
+void	printfiles(t_list *targets, int extended_print, int show_total)
 {
-   while (n-- > 0)
-      ft_printf(" ");
-}
+	t_list	*tmp;
+	t_file	*file;
+	t_width	w;
 
-void get_widths(t_list *files, int *wl, int *wo, int *wg, int *ws)
-{
-   *wl = 0;
-   *wo = 0;
-   *wg = 0;
-   *ws = 0;
-   while (files)
-   {
-      t_file *f = files->content;
-      int l = num_width(f->nlink);
-      int o = ft_strlen(owner_name(f->uid));
-      int g = ft_strlen(group_name(f->gid));
-      int s = num_width(f->size);
-      if (l > *wl)
-         *wl = l;
-      if (o > *wo)
-         *wo = o;
-      if (g > *wg)
-         *wg = g;
-      if (s > *ws)
-         *ws = s;
-      files = files->next;
-   }
-}
-
-char file_type(mode_t m)
-{
-   if (S_ISDIR(m))
-      return 'd';
-   if (S_ISLNK(m))
-      return 'l';
-   if (S_ISCHR(m))
-      return 'c';
-   if (S_ISBLK(m))
-      return 'b';
-   if (S_ISFIFO(m))
-      return 'p';
-   if (S_ISSOCK(m))
-      return 's';
-   return '-';
-}
-
-char spec_char(mode_t m, int xbit, int sbit, char yes, char no)
-{
-   if (m & sbit)
-      return (m & xbit) ? yes : no;
-   return (m & xbit) ? 'x' : '-';
-}
-
-void print_perms(t_file *file)
-{
-   mode_t m = file->mode;
-
-   ft_printf("%c", file_type(m));
-   ft_printf("%c", (m & S_IRUSR) ? 'r' : '-');
-   ft_printf("%c", (m & S_IWUSR) ? 'w' : '-');
-   ft_printf("%c", spec_char(m, S_IXUSR, S_ISUID, 's', 'S'));
-   ft_printf("%c", (m & S_IRGRP) ? 'r' : '-');
-   ft_printf("%c", (m & S_IWGRP) ? 'w' : '-');
-   ft_printf("%c", spec_char(m, S_IXGRP, S_ISGID, 's', 'S'));
-   ft_printf("%c", (m & S_IROTH) ? 'r' : '-');
-   ft_printf("%c", (m & S_IWOTH) ? 'w' : '-');
-   ft_printf("%c", spec_char(m, S_IXOTH, S_ISVTX, 't', 'T'));
-}
-
-void print_long(t_file *file, int wl, int wo, int wg, int ws)
-{
-   print_perms(file);
-   ft_printf(" ");
-   print_pad(wl - num_width(file->nlink));
-   ft_printf("%d", file->nlink);
-   ft_printf(" ");
-   char *ow = owner_name(file->uid);
-   ft_printf("%s", ow);
-   print_pad(wo - ft_strlen(ow));
-   ft_printf("  ");
-   char *gr = group_name(file->gid);
-   ft_printf("%s", gr);
-   print_pad(wg - ft_strlen(gr));
-   ft_printf("  ");
-   print_pad(ws - num_width(file->size));
-   ft_printf("%ld", file->size);
-   ft_printf(" ");
-   char *time_str = ctime(&file->mtime);
-   ft_printf("%.12s", time_str + 4);
-   ft_printf(" ");
-   ft_printf("%s", file->file_name);
-   if (file->link)
-      ft_printf(" -> %s", file->link);
-   ft_printf("\n");
-}
-
-long get_total(t_list *files)
-{
-   long total = 0;
-
-   while (files)
-   {
-      t_file *f = files->content;
-      total += f->blocks;
-      files = files->next;
-   }
-   return total;
-}
-
-void printfiles(t_list *targets, int extended_print, int show_total)
-{
-   t_list *tmp = targets;
-   int wl, wo, wg, ws;
-
-   get_widths(targets, &wl, &wo, &wg, &ws);
-   if (extended_print && show_total)
-      ft_printf("total %ld\n", get_total(targets));
-   while (tmp)
-   {
-      t_file *file = (t_file *) tmp->content;
-
-      if (extended_print)
-         print_long(file, wl, wo, wg, ws);
-      else
-         ft_printf("%s\n", file->file_name);
-      tmp = tmp->next;
-   }
+	tmp = targets;
+	get_widths(targets, &w);
+	if (extended_print && show_total)
+		ft_printf("total %ld\n", get_total(targets));
+	while (tmp)
+	{
+		file = tmp->content;
+		if (extended_print)
+			print_long(file, w);
+		else
+			ft_printf("%s\n", file->file_name);
+		tmp = tmp->next;
+	}
 }
