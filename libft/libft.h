@@ -69,6 +69,13 @@ void	ft_lstclear(t_list **lst, void (*del)(void*));
 void	ft_lstiter(t_list *lst, void (*f)(void *));
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
 // ----------------------- ft_printf -----------------------//
+typedef struct s_fmt
+{
+	char	mod;
+	char	c;
+	int		prec;
+}	t_fmt;
+
 void	ft_putchar(const char c, int *counter);
 void	ft_putstr(const char *s, int *counter);
 void	ft_putnbr(int nb, int *counter);

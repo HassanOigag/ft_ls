@@ -24,47 +24,69 @@ static void	ft_putlnbr(long long nb, int *counter)
 	ft_putchar(nb % 10 + 48, counter);
 }
 
-static void	ft_print_format(va_list *ap, char mod, char c, int *counter, int prec)
+static void	ft_print_str(va_list *ap, int prec, int *counter)
 {
 	char	*s;
 	int		i;
 
-	if (c == '%')
-		ft_putchar(c, counter);
-	else if (c == 'c')
+	s = va_arg(*ap, char *);
+	i = 0;
+	while (s && s[i] && (prec < 0 || i < prec))
+		ft_putchar(s[i++], counter);
+}
+
+static void	ft_print_format(va_list *ap, t_fmt f, int *counter)
+{
+	if (f.c == 'c')
 		ft_putchar(va_arg(*ap, int), counter);
-	else if (c == 's')
-	{
-		s = va_arg(*ap, char *);
-		i = 0;
-		while (s && s[i] && (prec < 0 || i < prec))
-			ft_putchar(s[i++], counter);
-	}
-	else if ((c == 'd' || c == 'i') && mod == 'l')
+	else if (f.c == 's')
+		ft_print_str(ap, f.prec, counter);
+	else if ((f.c == 'd' || f.c == 'i') && f.mod == 'l')
 		ft_putlnbr(va_arg(*ap, long long), counter);
-	else if (c == 'd' || c == 'i')
+	else if (f.c == 'd' || f.c == 'i')
 		ft_putnbr(va_arg(*ap, int), counter);
-	else if (c == 'x')
+	else if (f.c == 'x')
 		ft_puthex(va_arg(*ap, unsigned int), 0, counter);
-	else if (c == 'X')
+	else if (f.c == 'X')
 		ft_puthex(va_arg(*ap, unsigned int), 1, counter);
-	else if (c == 'u')
+	else if (f.c == 'u')
 		ft_putunbr(va_arg(*ap, unsigned int), counter);
-	else if (c == 'p')
+	else if (f.c == 'p')
 	{
 		ft_putstr("0x", counter);
 		ft_puthex_long(va_arg(*ap, unsigned long), 0, counter);
 	}
 	else
-		ft_putchar(c, counter);
+		ft_putchar(f.c, counter);
+}
+
+static int	ft_parse_spec(const char *s, int i, t_fmt *f)
+{
+	f->mod = '\0';
+	f->prec = -1;
+	if (s[i] == 'l')
+	{
+		f->mod = 'l';
+		i++;
+		if (s[i] == 'l')
+			i++;
+	}
+	if (s[i] == '.')
+	{
+		i++;
+		f->prec = ft_atoi(s + i);
+		while (s[i] >= '0' && s[i] <= '9')
+			i++;
+	}
+	f->c = s[i];
+	return (i);
 }
 
 int	ft_printf(const char *s, ...)
 {
 	int		counter;
 	int		i;
-	int		prec;
-	char	mod;
+	t_fmt	f;
 	va_list	ap;
 
 	counter = 0;
@@ -74,27 +96,10 @@ int	ft_printf(const char *s, ...)
 	{
 		if (s[i] == '%')
 		{
-			i++;
-			mod = '\0';
-			prec = -1;
-			if (s[i] == 'l')
-			{
-				mod = 'l';
-				i++;
-				if (s[i] == 'l')
-					i++;
-			}
-			if (s[i] == '.')
-			{
-				i++;
-				prec = ft_atoi(s + i);
-				while (s[i] && (s[i] >= '0' && s[i] <= '9'))
-					i++;
-			}
-			if (s[i])
-				ft_print_format(&ap, mod, s[i], &counter, prec);
-			else
+			i = ft_parse_spec(s, i + 1, &f);
+			if (!f.c)
 				break ;
+			ft_print_format(&ap, f, &counter);
 		}
 		else
 			ft_putchar(s[i], &counter);
