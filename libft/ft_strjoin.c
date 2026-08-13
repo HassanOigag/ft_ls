@@ -6,7 +6,7 @@
 /*   By: hoigag <hoigag@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/04 16:18:07 by hoigag            #+#    #+#             */
-/*   Updated: 2022/10/04 17:27:32 by hoigag           ###   ########.fr       */
+/*   Updated: 2026/08/13 18:02:29 by hoigag           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	int		size;
 
 	if (!s1 || !s2)
-		return NULL;
-
+		return (NULL);	
 	size = ft_strlen(s1) + ft_strlen(s2);
 	str = malloc(sizeof(char) * (size + 1));
 	if (!str)
