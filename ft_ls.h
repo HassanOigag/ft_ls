@@ -23,6 +23,8 @@
 # include <errno.h>
 # include <string.h>
 
+# define SIXMONTHS 15724800
+
 typedef enum e_flag
 {
 	FLAG_L,

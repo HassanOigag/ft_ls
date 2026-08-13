@@ -55,11 +55,23 @@ long	get_total(t_list *files)
 	return (total);
 }
 
+static void	print_time(time_t mtime)
+{
+	char	*t;
+	time_t	now;
+
+	t = ctime(&mtime);
+	now = time(NULL);
+	if (mtime > now || now - mtime >= SIXMONTHS)
+		ft_printf("%.7s %.4s ", t + 4, t + 20);
+	else
+		ft_printf("%.12s ", t + 4);
+}
+
 void	print_long(t_file *file, t_width w)
 {
 	char	*ow;
 	char	*gr;
-	char	*t;
 
 	print_perms(file);
 	print_pad(w.nlink - num_width(file->nlink) + 1);
@@ -72,8 +84,7 @@ void	print_long(t_file *file, t_width w)
 	print_pad(w.group - ft_strlen(gr) + 2);
 	print_pad(w.size - num_width(file->size));
 	ft_printf("%ld ", file->size);
-	t = ctime(&file->mtime);
-	ft_printf("%.12s ", t + 4);
+	print_time(file->mtime);
 	ft_printf("%s", file->file_name);
 	if (file->link)
 		ft_printf(" -> %s", file->link);
